@@ -1,5 +1,6 @@
 package kz.abcsoft.multiplescreendemo1;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 public class MainActivity extends ActionBarActivity implements TitlesFragment.onItemClickListener {
 
     int position = 0;
+    boolean withDetails = true;
 
     @Override
     public void itemClick(int position) {
@@ -17,10 +19,16 @@ public class MainActivity extends ActionBarActivity implements TitlesFragment.on
     }
 
     void showDetails(int pos) {
-        DetailsFragment details = (DetailsFragment) getFragmentManager().findFragmentById(R.id.cont);
-        if (details == null || details.getPosition() != pos) {
-            details = DetailsFragment.newInstance(pos);
-            getFragmentManager().beginTransaction().replace(R.id.cont, details).commit();
+        if (withDetails) {
+            DetailsFragment details = (DetailsFragment) getFragmentManager()
+                    .findFragmentById(R.id.cont);
+            if (details == null || details.getPosition() != pos) {
+                details = DetailsFragment.newInstance(pos);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.cont, details).commit();
+            }
+        } else {
+            startActivity(new Intent(this, DetailsActivity.class).putExtra("position", position));
         }
     }
 
@@ -31,7 +39,10 @@ public class MainActivity extends ActionBarActivity implements TitlesFragment.on
 
         if (savedInstanceState != null)
             position = savedInstanceState.getInt("position");
-        showDetails(position);
+
+        withDetails = (findViewById(R.id.cont) != null);
+        if (withDetails)
+            showDetails(position);
     }
 
 
